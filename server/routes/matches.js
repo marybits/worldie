@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 const Match = require('../models/Match');
+const Prediction = require('../models/Prediction');
 
-// GET /api/matches 
+// GET /api/matches - Get all matches sorted by date
 router.get('/', async (req, res) => {
   try {
     const matches = await Match.find().sort({ matchDate: 1 });
@@ -13,7 +14,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST /api/matches/sync 
+// POST /api/matches/sync - Sync matches from external API and calculate scores for finished matches
 router.post('/sync', async (req, res) => {
   try {
     const response = await axios.get(
@@ -22,9 +23,13 @@ router.post('/sync', async (req, res) => {
     );
 
     const matches = response.data.matches;
+    let scoredCount = 0;
 
     for (const m of matches) {
-      await Match.findOneAndUpdate(
+      const previousMatch = await Match.findOne({ externalId: m.id });
+      const wasAlreadyFinished = previousMatch?.status === 'FINISHED';
+
+      const updatedMatch = await Match.findOneAndUpdate(
         { externalId: m.id },
         {
           externalId: m.id,
@@ -38,9 +43,56 @@ router.post('/sync', async (req, res) => {
         },
         { upsert: true, new: true }
       );
+
+      // If the match just finished, calculate scores for predictions
+      if (updatedMatch.status === 'FINISHED' && !wasAlreadyFinished) {
+        await calculateScoresForMatch(updatedMatch);
+        scoredCount++;
+      }
     }
 
-    res.json({ message: `${matches.length} matches synced` });
+    res.json({ message: `${matches.length} matches synced, ${scoredCount} newly scored` });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Helper function to calculate scores for predictions of a finished match
+async function calculateScoresForMatch(match) {
+  const predictions = await Prediction.find({ match: match._id });
+
+  for (const pred of predictions) {
+    let points = 0;
+
+    const exactMatch =
+      pred.predictedHomeScore === match.homeScore &&
+      pred.predictedAwayScore === match.awayScore;
+
+    const predictedOutcome = Math.sign(pred.predictedHomeScore - pred.predictedAwayScore);
+    const actualOutcome = Math.sign(match.homeScore - match.awayScore);
+    const correctOutcome = predictedOutcome === actualOutcome;
+
+    if (exactMatch) {
+      points = 3;
+    } else if (correctOutcome) {
+      points = 1;
+    }
+
+    pred.points = points;
+    await pred.save();
+  }
+}
+
+// POST /api/matches/:id/calculate - test endpoint to calculate scores for a specific match (useful for testing)
+router.post('/:id/calculate', async (req, res) => {
+  try {
+    const match = await Match.findById(req.params.id);
+    if (!match) {
+      return res.status(404).json({ message: 'Match not found' });
+    }
+
+    await calculateScoresForMatch(match);
+    res.json({ message: 'Scores calculated', match });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
