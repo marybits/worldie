@@ -15,6 +15,8 @@ app.use(express.json());
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/matches', require('./routes/matches'));
 app.use('/api/predictions', require('./routes/predictions'));
+app.use('/api/leaderboard', require('./routes/leaderboard'));
+
 
 app.get('/', (req, res) => {
   res.json({ message: 'Worldie API running ⚽' });
