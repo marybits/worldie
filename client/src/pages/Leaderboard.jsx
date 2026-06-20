@@ -83,7 +83,7 @@ function Leaderboard() {
             {leaderboard.map((entry, index) => (
               <tr key={entry.userId} className="border-t border-gray-800">
                 <td className="px-4 py-3 font-bold">
-                  {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
+                  {index < 3 && entry.totalPoints > 0 ? ['🥇', '🥈', '🥉'][index] : index + 1}
                 </td>
                 <td className="px-4 py-3">{entry.username}</td>
                 <td className="px-4 py-3">
