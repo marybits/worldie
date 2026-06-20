@@ -73,7 +73,7 @@ function Dashboard() {
 
       {sortedGroupKeys.map((groupKey) => (
         <div key={groupKey} className="mb-8">
-          <h3 className="flex items-center gap-3 text-2xl font-extrabold text-gray-100 mt-8">
+          <h3 className="flex items-center gap-3 text-3xl font-extrabold text-gray-100 mt-8">
             <span className="w-1 h-6 rounded-full shrink-0" style={{ backgroundColor: 'var(--accent)' }} />
             {formatGroupTitle(groupKey)}
           </h3>

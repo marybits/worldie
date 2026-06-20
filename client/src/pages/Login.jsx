@@ -44,7 +44,7 @@ function Login() {
           {error && <p className="text-red-500 text-sm m-0">{error}</p>}
           <button
             type="submit"
-            className="bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dark)] text-gray-900 border-none rounded-lg py-2 cursor-pointer font-bold hover:from-[var(--accent-dark)] hover:to-[oklch(40%_0.15_75)] hover:scale-105 active:scale-95 transition-all duration-200"
+            className="bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dark)] text-gray-900 border-none rounded-lg py-2 cursor-pointer font-bold hover:from-[var(--accent-dark)] hover:to-[oklch(32%_0.11_229.7)] hover:scale-105 active:scale-95 transition-all duration-200"
           >
             Login
           </button>
@@ -70,7 +70,7 @@ function Login() {
 
         <p className="mt-4 text-sm">
           Don't have an account?{' '}
-          <Link to="/register" className="text-[var(--accent)] hover:text-[oklch(22%_0.065_152.934)]">Register</Link>
+          <Link to="/register" className="text-[var(--accent)] hover:text-[var(--accent-dark)]">Register</Link>
         </p>
       </div>
     </div>

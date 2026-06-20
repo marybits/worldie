@@ -53,7 +53,9 @@ function Navbar() {
   return (
     <div className="flex justify-between items-center py-4 mb-6 border-b border-gray-800">
       <div className="flex flex-col">
-        <h2 className="m-0 uppercase tracking-widest font-extrabold text-3xl text-[var(--accent)]">Worldie ⚽</h2>
+        <h2 className="m-0 uppercase tracking-widest font-extrabold text-4xl">
+          <span className="bg-gradient-to-r from-[var(--accent)] to-[var(--accent-dark)] bg-clip-text text-transparent">Worldie</span> ⚽
+        </h2>
         <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">World Cup 2026 Predictions</span>
       </div>
 

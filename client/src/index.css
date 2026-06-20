@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  --accent: oklch(80% 0.13 85);
-  --accent-dark: oklch(60% 0.13 85);
-  --accent-light: oklch(75% 0.15 75 / 0.1);
+  --accent: oklch(62% 0.13 229.7);
+  --accent-dark: oklch(44% 0.11 229.7);
+  --accent-light: oklch(62% 0.13 229.7 / 0.1);
 }
 
 input.no-spinner::-webkit-outer-spin-button,
@@ -20,6 +20,7 @@ input.no-spinner {
 body {
   margin: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: oklch(16% 0.005 285);
+  background: linear-gradient(135deg, oklch(18% 0.02 270) 0%, oklch(12% 0.01 270) 50%, oklch(16% 0.015 270) 100%);
+  min-height: 100vh;
   color: oklch(92% 0.005 285);
 }

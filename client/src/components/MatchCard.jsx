@@ -37,7 +37,9 @@ function MatchCard({ match, existingPrediction }) {
   };
 
   return (
-    <div className="rounded-2xl overflow-hidden border border-gray-800 bg-transparent hover:scale-[1.02] transition-transform duration-200">
+    <div
+      className="rounded-2xl overflow-hidden border border-gray-800 bg-transparent shadow-[0_-2px_12px_rgba(0,0,0,0.3),_0_0_0_1px_rgba(255,255,255,0.03)] hover:shadow-[0_0_20px_oklch(62%_0.13_229.7_/_0.3)] hover:-translate-y-0.5 transition-all duration-200"
+    >
       <div className="flex h-1">
         <div className="flex-1" style={{ background: homeColor }} />
         <div className="flex-1" style={{ background: awayColor }} />
@@ -80,7 +82,7 @@ function MatchCard({ match, existingPrediction }) {
               value={homeScore}
               onChange={(e) => setHomeScore(e.target.value)}
               style={{ width: '36px' }}
-              className="no-spinner font-mono p-0.5 text-xs bg-gray-800 border border-gray-700 text-gray-100 rounded placeholder:text-gray-500"
+              className="no-spinner font-mono p-0.5 text-xs bg-gray-800 border border-gray-700 text-gray-100 rounded placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:shadow-[0_0_8px_oklch(62%_0.13_229.7_/_0.5)]"
             />
             <span className="mx-1 font-mono">-</span>
             <input
@@ -89,11 +91,11 @@ function MatchCard({ match, existingPrediction }) {
               value={awayScore}
               onChange={(e) => setAwayScore(e.target.value)}
               style={{ width: '36px' }}
-              className="no-spinner font-mono p-0.5 text-xs bg-gray-800 border border-gray-700 text-gray-100 rounded placeholder:text-gray-500"
+              className="no-spinner font-mono p-0.5 text-xs bg-gray-800 border border-gray-700 text-gray-100 rounded placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:shadow-[0_0_8px_oklch(62%_0.13_229.7_/_0.5)]"
             />
             <button
               onClick={handlePredict}
-              className="ml-2 bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dark)] text-gray-900 border-none rounded-md px-2 py-0.5 text-xs cursor-pointer hover:from-[var(--accent-dark)] hover:to-[oklch(40%_0.15_75)] hover:scale-105 active:scale-95 transition-all duration-200"
+              className="ml-2 bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dark)] text-gray-900 border-none rounded-md px-2 py-0.5 text-xs cursor-pointer hover:from-[var(--accent-dark)] hover:to-[oklch(32%_0.11_229.7)] hover:scale-105 active:scale-95 transition-all duration-200"
             >
               Predict
             </button>

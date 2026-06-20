@@ -25,8 +25,23 @@ passport.use(
           return done(null, user);
         }
 
+        const base = (profile.name?.givenName || profile.displayName)
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, '');
+
+        let username = base;
+        let attempts = 0;
+        while (await User.findOne({ username })) {
+          attempts++;
+          if (attempts >= 5) {
+            username = base + Math.floor(Math.random() * 9000 + 1000);
+            break;
+          }
+          username = base + (Math.floor(Math.random() * 90) + 10);
+        }
+
         user = await User.create({
-          username: profile.displayName.replace(/\s+/g, '').toLowerCase() + Math.floor(Math.random() * 1000),
+          username,
           email: profile.emails[0].value,
           googleId: profile.id
         });
