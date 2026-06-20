@@ -19,6 +19,21 @@ function MatchCard({ match, existingPrediction }) {
   const scoreInputClass = "no-spinner w-12 text-center font-mono py-2 px-1 text-sm bg-gray-800 border border-gray-700 text-gray-100 rounded-lg placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:shadow-[0_0_8px_oklch(62%_0.13_229.7_/_0.5)]";
 
   const hasStarted = new Date() >= new Date(match.matchDate);
+
+  // Returns a human-readable countdown string, e.g. "2d 4h" or "45m".
+  // Returns null if the match has already started.
+  function getCountdown(matchDate) {
+    const diff = new Date(matchDate) - Date.now();
+    if (diff <= 0) return null;
+    const days  = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const mins  = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    if (days > 0)  return `${days}d ${hours}h`;
+    if (hours > 0) return `${hours}h ${mins}m`;
+    return `${mins}m`;
+  }
+
+  const countdown = getCountdown(match.matchDate);
   const teamsKnown = !!(match.homeTeam && match.awayTeam);
   const homeTeam = match.homeTeam ?? 'TBD';
   const awayTeam = match.awayTeam ?? 'TBD';
@@ -79,14 +94,22 @@ function MatchCard({ match, existingPrediction }) {
           }
         </div>
 
-        <p className="text-gray-400 text-xs my-1 font-medium">
-          {new Date(match.matchDate).toLocaleString(undefined, {
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-          })}
-        </p>
+        <div className="flex items-center gap-2 my-1 flex-wrap">
+          <p className="text-gray-400 text-xs font-medium m-0">
+            {new Date(match.matchDate).toLocaleString(undefined, {
+              month: 'short',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
+          </p>
+          {/* Countdown badge — only shown for upcoming matches */}
+          {countdown && (
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-800 text-[var(--accent)]">
+              ⏱ {countdown}
+            </span>
+          )}
+        </div>
 
         {match.status === 'FINISHED' && (
           <>
@@ -94,16 +117,22 @@ function MatchCard({ match, existingPrediction }) {
               {match.homeScore} - {match.awayScore}
             </p>
             {submitted && (
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-xs uppercase tracking-wide bg-gray-800 text-gray-400 rounded-full px-2 py-0.5">
-                  Predicted
-                </span>
-                <span className="font-mono text-gray-300 text-sm">
-                  {homeScore} - {awayScore}
+              <div className="flex items-center gap-2 mt-1 flex-wrap">
+                <span className="font-mono text-gray-400 text-xs">
+                  Tuyo: {homeScore}–{awayScore}
                 </span>
                 {existingPrediction?.points != null && (
-                  <span className="bg-[var(--accent)] text-gray-900 px-2 py-0.5 rounded-full text-xs font-bold">
-                    {existingPrediction.points} pts
+                  // Color-coded badge: green = exact (+3), amber = correct winner (+1), red = wrong (+0)
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                    existingPrediction.points === 3
+                      ? 'bg-green-900/60 text-green-400'
+                      : existingPrediction.points === 1
+                      ? 'bg-amber-900/60 text-amber-400'
+                      : 'bg-red-900/60 text-red-400'
+                  }`}>
+                    {existingPrediction.points === 3 && '⭐ +3 exacto'}
+                    {existingPrediction.points === 1 && '+1 ganador'}
+                    {existingPrediction.points === 0 && '+0 fallaste'}
                   </span>
                 )}
               </div>

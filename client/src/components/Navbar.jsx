@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
+import api from '../services/api';
 
 function Navbar() {
   const { user, logout, updateUsername } = useAuth();
@@ -10,6 +11,26 @@ function Navbar() {
   const [usernameInput, setUsernameInput] = useState('');
   const [usernameError, setUsernameError] = useState('');
   const dropdownRef = useRef(null);
+
+  // userRank holds { rank, points } for the current user, or null while loading
+  const [userRank, setUserRank] = useState(null);
+
+  useEffect(() => {
+    // Fetch the leaderboard once on mount to get the user's current rank and points.
+    // We find the user's entry by matching userId — the leaderboard is already sorted by points.
+    async function fetchRank() {
+      try {
+        const res = await api.get('/leaderboard');
+        const index = res.data.findIndex((entry) => entry.userId === user?.id);
+        if (index !== -1) {
+          setUserRank({ rank: index + 1, points: res.data[index].totalPoints });
+        }
+      } catch {
+        // Silently fail — rank is a nice-to-have, not critical
+      }
+    }
+    if (user) fetchRank();
+  }, [user]);
 
   // No more capsule borders — active state uses a subtle background + accent color,
   // inactive is plain text. Saves horizontal space and feels more modern.
@@ -80,7 +101,14 @@ function Navbar() {
             <span className="bg-[var(--accent)] text-gray-900 rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold uppercase">
               {user?.username?.[0]}
             </span>
-            <span className="hidden sm:block text-sm">{user?.username}</span>
+            <div className="hidden sm:flex flex-col items-start leading-none">
+              <span className="text-sm text-gray-200">{user?.username}</span>
+              {userRank && (
+                <span className="text-xs text-gray-500 mt-0.5">
+                  #{userRank.rank} · {userRank.points} pts
+                </span>
+              )}
+            </div>
             <svg
               width="12" height="12" viewBox="0 0 12 12" fill="none"
               className={`transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`}
@@ -122,6 +150,14 @@ function Navbar() {
                 </div>
               ) : (
                 <>
+                  {userRank && (
+                    <div className="px-4 py-2.5 border-b border-gray-800">
+                      <p className="text-xs text-gray-500 m-0">Your rank</p>
+                      <p className="text-sm font-semibold text-gray-100 m-0 mt-0.5">
+                        #{userRank.rank} · {userRank.points} pts
+                      </p>
+                    </div>
+                  )}
                   <button
                     onClick={openEditUsername}
                     className="w-full text-left px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-800 hover:text-gray-100 transition-colors cursor-pointer border-none bg-transparent"
