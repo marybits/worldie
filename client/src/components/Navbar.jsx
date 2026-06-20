@@ -11,10 +11,12 @@ function Navbar() {
   const [usernameError, setUsernameError] = useState('');
   const dropdownRef = useRef(null);
 
+  // No more capsule borders — active state uses a subtle background + accent color,
+  // inactive is plain text. Saves horizontal space and feels more modern.
   const linkClass = (path) =>
     location.pathname === path
-      ? 'no-underline rounded-full px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border border-[var(--accent)] text-[var(--accent)] bg-transparent font-bold transition-colors'
-      : 'no-underline rounded-full px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-800 text-gray-400 hover:border-gray-600 hover:text-gray-200 transition-colors';
+      ? 'no-underline rounded-xl px-3 py-1.5 text-xs sm:text-sm font-semibold text-[var(--accent)] bg-gray-800 transition-colors'
+      : 'no-underline rounded-xl px-3 py-1.5 text-xs sm:text-sm text-gray-400 hover:text-gray-100 hover:bg-gray-800/60 transition-colors';
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -53,7 +55,8 @@ function Navbar() {
   return (
     <div className="flex justify-between items-center py-4 mb-6 border-b border-gray-800">
       <div className="flex flex-col">
-        <h2 className="m-0 uppercase tracking-widest font-extrabold text-2xl sm:text-4xl">
+        {/* whitespace-nowrap prevents the ⚽ from wrapping to a second line on mobile */}
+        <h2 className="m-0 uppercase tracking-widest font-extrabold text-xl sm:text-4xl whitespace-nowrap">
           <span className="bg-gradient-to-r from-[var(--accent)] to-[var(--accent-dark)] bg-clip-text text-transparent">Worldie</span> ⚽
         </h2>
         <span className="hidden sm:block text-xs text-gray-500 font-medium uppercase tracking-wide">World Cup 2026 Predictions</span>
