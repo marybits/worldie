@@ -9,6 +9,9 @@ const passport = require('passport');
 
 connectDB();
 
+const startCronJobs = require('./config/cron');
+startCronJobs();
+
 const app = express();
 
 app.use(cors());
@@ -17,7 +20,7 @@ app.use(passport.initialize());
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
-app.use('/api/matches', require('./routes/matches'));
+app.use('/api/matches', require('./routes/matches').router);
 app.use('/api/predictions', require('./routes/predictions'));
 app.use('/api/leaderboard', require('./routes/leaderboard'));
 

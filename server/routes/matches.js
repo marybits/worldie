@@ -14,44 +14,48 @@ router.get('/', async (req, res) => {
   }
 });
 
+async function syncMatches() {
+  const response = await axios.get(
+    'https://api.football-data.org/v4/competitions/WC/matches',
+    { headers: { 'X-Auth-Token': process.env.FOOTBALL_API_KEY } }
+  );
+
+  const matches = response.data.matches;
+  let scoredCount = 0;
+
+  for (const m of matches) {
+    const previousMatch = await Match.findOne({ externalId: m.id });
+    const wasAlreadyFinished = previousMatch?.status === 'FINISHED';
+
+    const updatedMatch = await Match.findOneAndUpdate(
+      { externalId: m.id },
+      {
+        externalId: m.id,
+        homeTeam: m.homeTeam.name,
+        awayTeam: m.awayTeam.name,
+        homeScore: m.score.fullTime.home,
+        awayScore: m.score.fullTime.away,
+        matchDate: m.utcDate,
+        status: m.status,
+        group: m.group
+      },
+      { upsert: true, returnDocument: 'after' }
+    );
+
+    if (updatedMatch.status === 'FINISHED' && !wasAlreadyFinished) {
+      await calculateScoresForMatch(updatedMatch);
+      scoredCount++;
+    }
+  }
+
+  return { matchesCount: matches.length, scoredCount };
+}
+
 // POST /api/matches/sync - Sync matches from external API and calculate scores for finished matches
 router.post('/sync', async (req, res) => {
   try {
-    const response = await axios.get(
-      'https://api.football-data.org/v4/competitions/WC/matches',
-      { headers: { 'X-Auth-Token': process.env.FOOTBALL_API_KEY } }
-    );
-
-    const matches = response.data.matches;
-    let scoredCount = 0;
-
-    for (const m of matches) {
-      const previousMatch = await Match.findOne({ externalId: m.id });
-      const wasAlreadyFinished = previousMatch?.status === 'FINISHED';
-
-      const updatedMatch = await Match.findOneAndUpdate(
-        { externalId: m.id },
-        {
-          externalId: m.id,
-          homeTeam: m.homeTeam.name,
-          awayTeam: m.awayTeam.name,
-          homeScore: m.score.fullTime.home,
-          awayScore: m.score.fullTime.away,
-          matchDate: m.utcDate,
-          status: m.status,
-          group: m.group
-        },
-        { upsert: true, new: true }
-      );
-
-      // If the match just finished, calculate scores for predictions
-      if (updatedMatch.status === 'FINISHED' && !wasAlreadyFinished) {
-        await calculateScoresForMatch(updatedMatch);
-        scoredCount++;
-      }
-    }
-
-    res.json({ message: `${matches.length} matches synced, ${scoredCount} newly scored` });
+    const result = await syncMatches();
+    res.json({ message: `${result.matchesCount} matches synced, ${result.scoredCount} newly scored` });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -98,4 +102,4 @@ router.post('/:id/calculate', async (req, res) => {
   }
 });
 
-module.exports = router;
+module.exports = { router, syncMatches };
