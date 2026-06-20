@@ -34,7 +34,7 @@ function Leaderboard() {
         Leaderboard 🏆
       </h2>
 
-      {top3.length > 0 && (
+      {top3.length > 0 && leaderboard[0].totalPoints > 0 && (
         <div className="flex items-end justify-center gap-2 sm:gap-4 mt-8 mb-8">
           {/* 2nd place */}
           {top3[1] ? (
