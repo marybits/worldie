@@ -131,4 +131,22 @@ router.put('/username', protect, async (req, res) => {
   }
 });
 
+// DELETE /api/auth/account - Permanently delete the current user and all their predictions
+router.delete('/account', protect, async (req, res) => {
+  try {
+    const Prediction = require('../models/Prediction');
+
+    // Delete all predictions first (orphaned data prevention), then the user.
+    // Promise.all runs both in parallel — faster than doing them sequentially.
+    await Promise.all([
+      Prediction.deleteMany({ user: req.userId }),
+      User.findByIdAndDelete(req.userId)
+    ]);
+
+    res.json({ message: 'Account deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = router;

@@ -3,6 +3,31 @@ import api from '../services/api';
 import { getTeamColor } from '../utils/teamColors';
 import { getFlagUrl } from '../utils/teamFlags';
 
+// Defined outside the component so it's not recreated on every render.
+// Pure function: same input always gives same output, no side effects.
+function getCountdown(matchDate) {
+  const diff = new Date(matchDate) - Date.now();
+  if (diff <= 0) return null;
+  const days  = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const mins  = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  if (days > 0)  return `${days}d ${hours}h`;
+  if (hours > 0) return `${hours}h ${mins}m`;
+  return `${mins}m`;
+}
+
+// Maps a prediction's points value to label + Tailwind color classes.
+// Using a lookup object avoids the 0 && '...' React gotcha where the number 0
+// would be rendered literally instead of being falsy.
+function getResultBadge(points) {
+  const map = {
+    3: { label: '⭐ +3 exacto',  classes: 'bg-green-900/60 text-green-400' },
+    1: { label: '+1 ganador',    classes: 'bg-amber-900/60 text-amber-400' },
+    0: { label: '+0 fallaste',   classes: 'bg-red-900/60 text-red-400' },
+  };
+  return map[points] ?? null;
+}
+
 function MatchCard({ match, existingPrediction }) {
   const [homeScore, setHomeScore] = useState(
     existingPrediction?.predictedHomeScore ?? ''
@@ -19,20 +44,6 @@ function MatchCard({ match, existingPrediction }) {
   const scoreInputClass = "no-spinner w-12 text-center font-mono py-2 px-1 text-sm bg-gray-800 border border-gray-700 text-gray-100 rounded-lg placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:shadow-[0_0_8px_oklch(62%_0.13_229.7_/_0.5)]";
 
   const hasStarted = new Date() >= new Date(match.matchDate);
-
-  // Returns a human-readable countdown string, e.g. "2d 4h" or "45m".
-  // Returns null if the match has already started.
-  function getCountdown(matchDate) {
-    const diff = new Date(matchDate) - Date.now();
-    if (diff <= 0) return null;
-    const days  = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const mins  = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    if (days > 0)  return `${days}d ${hours}h`;
-    if (hours > 0) return `${hours}h ${mins}m`;
-    return `${mins}m`;
-  }
-
   const countdown = getCountdown(match.matchDate);
   const teamsKnown = !!(match.homeTeam && match.awayTeam);
   const homeTeam = match.homeTeam ?? 'TBD';
@@ -121,20 +132,12 @@ function MatchCard({ match, existingPrediction }) {
                 <span className="font-mono text-gray-400 text-xs">
                   Tuyo: {homeScore}–{awayScore}
                 </span>
-                {existingPrediction?.points != null && (
-                  // Color-coded badge: green = exact (+3), amber = correct winner (+1), red = wrong (+0)
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                    existingPrediction.points === 3
-                      ? 'bg-green-900/60 text-green-400'
-                      : existingPrediction.points === 1
-                      ? 'bg-amber-900/60 text-amber-400'
-                      : 'bg-red-900/60 text-red-400'
-                  }`}>
-                    {existingPrediction.points === 3 && '⭐ +3 exacto'}
-                    {existingPrediction.points === 1 && '+1 ganador'}
-                    {existingPrediction.points === 0 && '+0 fallaste'}
-                  </span>
-                )}
+                {existingPrediction?.points != null && (() => {
+                  const badge = getResultBadge(existingPrediction.points);
+                  return badge
+                    ? <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${badge.classes}`}>{badge.label}</span>
+                    : null;
+                })()}
               </div>
             )}
           </>
