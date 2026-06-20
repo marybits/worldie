@@ -65,9 +65,26 @@ function MatchCard({ match, existingPrediction }) {
         </p>
 
         {match.status === 'FINISHED' && (
-          <p className="font-bold font-mono text-sm my-1">
-            {match.homeScore} - {match.awayScore}
-          </p>
+          <>
+            <p className="font-bold font-mono text-sm my-1">
+              {match.homeScore} - {match.awayScore}
+            </p>
+            {submitted && (
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs uppercase tracking-wide bg-gray-800 text-gray-400 rounded-full px-2 py-0.5">
+                  Predicted
+                </span>
+                <span className="font-mono text-gray-300 text-sm">
+                  {homeScore} - {awayScore}
+                </span>
+                {existingPrediction?.points != null && (
+                  <span className="bg-[var(--accent)] text-gray-900 px-2 py-0.5 rounded-full text-xs font-bold">
+                    {existingPrediction.points} pts
+                  </span>
+                )}
+              </div>
+            )}
+          </>
         )}
 
         {!teamsKnown && (
@@ -103,17 +120,14 @@ function MatchCard({ match, existingPrediction }) {
           </div>
         )}
 
-        {submitted && (
-          <div className="mt-1">
-            <span className="bg-gray-800 text-gray-400 rounded-full px-2 py-0.5 text-xs uppercase">Predicted</span>
-            <p className="text-sm font-mono mt-1 mb-0">
+        {submitted && match.status !== 'FINISHED' && (
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-xs uppercase tracking-wide bg-gray-800 text-gray-400 rounded-full px-2 py-0.5">
+              Predicted
+            </span>
+            <span className="font-mono text-gray-300 text-sm">
               {homeScore} - {awayScore}
-              {existingPrediction?.points != null && (
-                <span className="ml-1 font-mono text-gray-900 px-2 py-0.5 rounded-full text-xs" style={{ backgroundColor: 'var(--accent)' }}>
-                  {existingPrediction.points} pts
-                </span>
-              )}
-            </p>
+            </span>
           </div>
         )}
 
