@@ -69,21 +69,23 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 
 // GET /api/auth/google/callback - Handles Google OAuth callback
 router.get('/google/callback', (req, res, next) => {
+  const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+
   passport.authenticate('google', { session: false }, (err, user, info) => {
     if (err) {
-  console.error('Google OAuth error:', err);
-  return res.redirect('http://localhost:5173/login');
-}
-if (!user) {
-  console.error('No user returned. Info:', info);
-  return res.redirect('http://localhost:5173/login');
-}
+      console.error('Google OAuth error:', err);
+      return res.redirect(`${clientUrl}/login`);
+    }
+    if (!user) {
+      console.error('No user returned. Info:', info);
+      return res.redirect(`${clientUrl}/login`);
+    }
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: '7d'
     });
 
-    res.redirect(`http://localhost:5173/oauth-success?token=${token}`);
+    res.redirect(`${clientUrl}/oauth-success?token=${token}`);
   })(req, res, next);
 });
 
