@@ -5,6 +5,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Leaderboard from './pages/Leaderboard';
+import OAuthSuccess from './pages/OAuthSuccess';
+
 
 function App() {
   return (
@@ -29,6 +31,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/oauth-success" element={<OAuthSuccess />} />
           <Route path="/" element={<Login />} />
         </Routes>
       </BrowserRouter>
