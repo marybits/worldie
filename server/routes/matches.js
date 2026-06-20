@@ -4,6 +4,16 @@ const axios = require('axios');
 const Match = require('../models/Match');
 const Prediction = require('../models/Prediction');
 
+/**
+ * @swagger
+ * /api/matches:
+ *   get:
+ *     summary: Get all matches sorted by date
+ *     tags: [Matches]
+ *     responses:
+ *       200:
+ *         description: Array of all match objects
+ */
 // GET /api/matches - Get all matches sorted by date
 router.get('/', async (req, res) => {
   try {
@@ -51,6 +61,17 @@ async function syncMatches() {
   return { matchesCount: matches.length, scoredCount };
 }
 
+/**
+ * @swagger
+ * /api/matches/sync:
+ *   post:
+ *     summary: Sync matches from the football-data.org API and score finished matches
+ *     tags: [Matches]
+ *     description: Pulls the latest World Cup match data, updates the database, and runs the scoring algorithm for any newly finished matches. Called automatically by a cron job every hour.
+ *     responses:
+ *       200:
+ *         description: Sync complete — returns count of synced and newly scored matches
+ */
 // POST /api/matches/sync - Sync matches from external API and calculate scores for finished matches
 router.post('/sync', async (req, res) => {
   try {
@@ -87,6 +108,26 @@ async function calculateScoresForMatch(match) {
   }
 }
 
+/**
+ * @swagger
+ * /api/matches/{id}/calculate:
+ *   post:
+ *     summary: Manually trigger score calculation for a specific match
+ *     tags: [Matches]
+ *     description: Useful for testing — recalculates points for all predictions on a given match.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The MongoDB ID of the match
+ *     responses:
+ *       200:
+ *         description: Scores calculated
+ *       404:
+ *         description: Match not found
+ */
 // POST /api/matches/:id/calculate - test endpoint to calculate scores for a specific match (useful for testing)
 router.post('/:id/calculate', async (req, res) => {
   try {

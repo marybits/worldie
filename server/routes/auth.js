@@ -5,7 +5,35 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const passport = require('passport');
 
-// POST /api/auth/register
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [username, email, password]
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 example: mary
+ *               email:
+ *                 type: string
+ *                 example: mary@example.com
+ *               password:
+ *                 type: string
+ *                 example: secret123
+ *     responses:
+ *       201:
+ *         description: User created — returns JWT token and user object
+ *       400:
+ *         description: Email already registered
+ */
 router.post('/register', async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -36,7 +64,32 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// POST /api/auth/login
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Login with email and password
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, password]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: mary@example.com
+ *               password:
+ *                 type: string
+ *                 example: secret123
+ *     responses:
+ *       200:
+ *         description: Login successful — returns JWT token and user object
+ *       400:
+ *         description: Invalid credentials
+ */
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -64,6 +117,17 @@ router.post('/login', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/auth/google:
+ *   get:
+ *     summary: Initiate Google OAuth login
+ *     tags: [Auth]
+ *     description: Redirects the user to Google's login page. Not callable from Swagger UI directly — open in a browser tab.
+ *     responses:
+ *       302:
+ *         description: Redirect to Google OAuth
+ */
 // GET /api/auth/google - Initiates Google OAuth login
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'], session: false }));
 
@@ -91,7 +155,23 @@ router.get('/google/callback', (req, res, next) => {
 
 const protect = require('../middleware/auth');
 
-// GET /api/auth/me - Get current user info 
+/**
+ * @swagger
+ * /api/auth/me:
+ *   get:
+ *     summary: Get current user info
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Returns the logged-in user's id, username, and email
+ *       401:
+ *         description: No token provided or token invalid
+ *       404:
+ *         description: User not found
+ */
+// GET /api/auth/me - Get current user info
 router.get('/me', protect, async (req, res) => {
   try {
     const user = await User.findById(req.userId).select('-password');
@@ -105,6 +185,34 @@ router.get('/me', protect, async (req, res) => {
 });
 
 
+/**
+ * @swagger
+ * /api/auth/username:
+ *   put:
+ *     summary: Update the current user's username
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [username]
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 minLength: 3
+ *                 example: mary2
+ *     responses:
+ *       200:
+ *         description: Username updated — returns updated user object
+ *       400:
+ *         description: Username too short or already taken
+ *       401:
+ *         description: Unauthorized
+ */
 // PUT /api/auth/username - Update current user's username
 router.put('/username', protect, async (req, res) => {
   try {
@@ -131,6 +239,20 @@ router.put('/username', protect, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/auth/account:
+ *   delete:
+ *     summary: Delete the current user's account and all their predictions
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Account deleted successfully
+ *       401:
+ *         description: Unauthorized
+ */
 // DELETE /api/auth/account - Permanently delete the current user and all their predictions
 router.delete('/account', protect, async (req, res) => {
   try {

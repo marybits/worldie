@@ -16,12 +16,13 @@ Worldie is a full-stack prediction game built around the 2026 FIFA World Cup. Us
 
 - **Authentication** — Email/password signup and Google OAuth, unified into a single user model
 - **Live match data** — World Cup 2026 fixtures and results auto-synced every 15 minutes from football-data.org
-- **Score predictions** — Submit predicted scorelines before kickoff; predictions lock automatically once a match starts
+- **Score predictions** — Submit and edit predicted scorelines before kickoff; predictions lock automatically once a match starts
 - **Points system** — 3 points for an exact scoreline, 1 point for correctly predicting the outcome (win/draw/loss)
-- **Leaderboard** — Ranked standings built with a MongoDB aggregation pipeline
+- **Leaderboard** — Ranked standings built with a MongoDB aggregation pipeline; live rank shown in the navbar
 - **Match organisation** — Fixtures grouped by Group Stage (A–L) and named knockout rounds (Round of 32 through Final)
-- **Editable username** — Users can update their display name at any time from the navbar
-- **Dark UI** — Team flags, colour-coded match cards with per-team accent bars, and a steel-blue accent theme
+- **Profile page** — Personal stats (points, predictions, exact scores, accuracy), username change, and account deletion with two-step confirmation
+- **API documentation** — Interactive Swagger UI at `/api/docs` documenting all 13 endpoints
+- **Dark UI** — Colour-coded result badges, countdown timers to kickoff, and animated skeleton loaders
 
 ---
 
@@ -110,6 +111,16 @@ npm run dev
 ```
 
 The client runs on `http://localhost:5173` and the API on `http://localhost:8080`.
+
+### API Documentation
+
+Once the server is running, interactive API docs are available at:
+
+```
+http://localhost:8080/api/docs
+```
+
+All 13 endpoints are documented with request bodies, parameters, and response codes. Protected endpoints can be tested by clicking **Authorize** and entering a JWT token.
 
 ---
 

@@ -2,6 +2,32 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 
+/**
+ * @swagger
+ * /api/leaderboard:
+ *   get:
+ *     summary: Get all users ranked by total points
+ *     tags: [Leaderboard]
+ *     description: Returns every user sorted by total points descending. Users with 0 points are included so the full ranking is always visible.
+ *     responses:
+ *       200:
+ *         description: Array of leaderboard entries sorted by points
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   userId:
+ *                     type: string
+ *                   username:
+ *                     type: string
+ *                   totalPoints:
+ *                     type: integer
+ *                   predictionsCount:
+ *                     type: integer
+ */
 // GET /api/leaderboard - Get all users ranked by total points (0-point users included)
 router.get('/', async (req, res) => {
   try {

@@ -17,6 +17,43 @@ function validateScores(home, away) {
   return null;
 }
 
+/**
+ * @swagger
+ * /api/predictions:
+ *   post:
+ *     summary: Submit a prediction for a match
+ *     tags: [Predictions]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [matchId, predictedHomeScore, predictedAwayScore]
+ *             properties:
+ *               matchId:
+ *                 type: string
+ *                 example: 6650a1b2c3d4e5f6a7b8c9d0
+ *               predictedHomeScore:
+ *                 type: integer
+ *                 minimum: 0
+ *                 example: 2
+ *               predictedAwayScore:
+ *                 type: integer
+ *                 minimum: 0
+ *                 example: 1
+ *     responses:
+ *       201:
+ *         description: Prediction created
+ *       400:
+ *         description: Invalid scores, match already started, or duplicate prediction
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Match not found
+ */
 // POST /api/predictions
 router.post('/', protect, async (req, res) => {
   try {
@@ -56,6 +93,47 @@ router.post('/', protect, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/predictions/{matchId}:
+ *   put:
+ *     summary: Edit an existing prediction (only before match starts)
+ *     tags: [Predictions]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: matchId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the match being predicted
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [predictedHomeScore, predictedAwayScore]
+ *             properties:
+ *               predictedHomeScore:
+ *                 type: integer
+ *                 minimum: 0
+ *                 example: 3
+ *               predictedAwayScore:
+ *                 type: integer
+ *                 minimum: 0
+ *                 example: 0
+ *     responses:
+ *       200:
+ *         description: Prediction updated
+ *       400:
+ *         description: Invalid scores or match already started
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Match or prediction not found
+ */
 // PUT /api/predictions/:matchId — update an existing prediction before the match starts
 router.put('/:matchId', protect, async (req, res) => {
   try {
@@ -94,6 +172,20 @@ router.put('/:matchId', protect, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/predictions/me:
+ *   get:
+ *     summary: Get all predictions made by the logged-in user
+ *     tags: [Predictions]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Array of prediction objects, each with the match data populated
+ *       401:
+ *         description: Unauthorized
+ */
 // GET /api/predictions/me
 router.get('/me', protect, async (req, res) => {
   try {
