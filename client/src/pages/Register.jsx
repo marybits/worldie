@@ -65,7 +65,7 @@ function Register() {
         </div>
 
         <a
-          href="http://localhost:8080/api/auth/google"
+          href={`${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/auth/google`}
           className="flex items-center justify-center gap-2 border border-gray-700 rounded-lg py-2 hover:bg-gray-800 transition-colors text-gray-200 no-underline"
         >
           <svg width="18" height="18" viewBox="0 0 24 24">
