@@ -14,8 +14,16 @@ startCronJobs();
 
 const app = express();
 
+// Build the allowed origins list from environment variables.
+// In production, set CLIENT_URL=https://your-domain.vercel.app in the server's env config.
+// In dev, localhost:5173 (Vite's default) is always allowed.
+const allowedOrigins = ['http://localhost:5173'];
+if (process.env.CLIENT_URL) {
+  allowedOrigins.push(process.env.CLIENT_URL);
+}
+
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://worldie-predictions.vercel.app'],
+  origin: allowedOrigins,
   credentials: true
 }));
 app.use(express.json());
@@ -32,7 +40,7 @@ app.get('/', (req, res) => {
   res.json({ message: 'Worldie API running ⚽' });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

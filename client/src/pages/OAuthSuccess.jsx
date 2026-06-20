@@ -11,8 +11,13 @@ function OAuthSuccess() {
     const token = searchParams.get('token');
 
     if (token) {
+      // Remove the token from the URL immediately so it doesn't sit in browser history.
+      // replaceState(state, title, url) replaces the current history entry without a reload.
+      window.history.replaceState({}, document.title, '/oauth-success');
+
       loginWithToken(token).then(() => {
-        window.location.href = '/dashboard';
+        // Use navigate() instead of window.location.href — no full page reload needed
+        navigate('/dashboard', { replace: true });
       });
     } else {
       navigate('/login');

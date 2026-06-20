@@ -11,6 +11,8 @@ function MatchCard({ match, existingPrediction }) {
     existingPrediction?.predictedAwayScore ?? ''
   );
   const [submitted, setSubmitted] = useState(!!existingPrediction);
+  // editing = true means the user clicked "Edit" and the inputs are shown again
+  const [editing, setEditing] = useState(false);
   const [error, setError] = useState('');
 
   const hasStarted = new Date() >= new Date(match.matchDate);
@@ -33,6 +35,20 @@ function MatchCard({ match, existingPrediction }) {
       setSubmitted(true);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to submit prediction');
+    }
+  };
+
+  const handleEdit = async () => {
+    setError('');
+    try {
+      // PUT to our new endpoint — note the matchId goes in the URL, not the body
+      await api.put(`/predictions/${match._id}`, {
+        predictedHomeScore: Number(homeScore),
+        predictedAwayScore: Number(awayScore)
+      });
+      setEditing(false);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to update prediction');
     }
   };
 
@@ -120,14 +136,59 @@ function MatchCard({ match, existingPrediction }) {
           </div>
         )}
 
-        {submitted && match.status !== 'FINISHED' && (
-          <div className="flex items-center gap-2 mt-1">
+        {submitted && match.status !== 'FINISHED' && !editing && (
+          <div className="flex items-center gap-2 mt-1 flex-wrap">
             <span className="text-xs uppercase tracking-wide bg-gray-800 text-gray-400 rounded-full px-2 py-0.5">
               Predicted
             </span>
             <span className="font-mono text-gray-300 text-sm">
               {homeScore} - {awayScore}
             </span>
+            {/* Only show Edit if match hasn't started yet */}
+            {!hasStarted && (
+              <button
+                onClick={() => setEditing(true)}
+                className="text-xs text-gray-500 hover:text-gray-300 underline underline-offset-2 bg-transparent border-none cursor-pointer p-0 transition-colors"
+              >
+                Edit
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Editing mode: show inputs pre-filled with existing scores */}
+        {submitted && editing && !hasStarted && (
+          <div className="mt-1">
+            <input
+              type="number"
+              min="0"
+              value={homeScore}
+              onChange={(e) => setHomeScore(e.target.value)}
+              style={{ width: '36px' }}
+              className="no-spinner font-mono p-0.5 text-xs bg-gray-800 border border-gray-700 text-gray-100 rounded placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:shadow-[0_0_8px_oklch(62%_0.13_229.7_/_0.5)]"
+            />
+            <span className="mx-1 font-mono">-</span>
+            <input
+              type="number"
+              min="0"
+              value={awayScore}
+              onChange={(e) => setAwayScore(e.target.value)}
+              style={{ width: '36px' }}
+              className="no-spinner font-mono p-0.5 text-xs bg-gray-800 border border-gray-700 text-gray-100 rounded placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:shadow-[0_0_8px_oklch(62%_0.13_229.7_/_0.5)]"
+            />
+            <button
+              onClick={handleEdit}
+              className="ml-2 bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dark)] text-gray-900 border-none rounded-md px-2 py-0.5 text-xs cursor-pointer hover:from-[var(--accent-dark)] hover:to-[oklch(32%_0.11_229.7)] hover:scale-105 active:scale-95 transition-all duration-200"
+            >
+              Save
+            </button>
+            <button
+              onClick={() => { setEditing(false); setError(''); }}
+              className="ml-1 text-xs text-gray-500 hover:text-gray-300 bg-transparent border-none cursor-pointer p-0 transition-colors"
+            >
+              Cancel
+            </button>
+            {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
           </div>
         )}
 

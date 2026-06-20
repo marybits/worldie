@@ -10,6 +10,7 @@ function Dashboard() {
   const [matches, setMatches] = useState([]);
   const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     async function fetchData() {
@@ -20,8 +21,9 @@ function Dashboard() {
         ]);
         setMatches(matchesRes.data);
         setPredictions(predictionsRes.data);
-      } catch (error) {
-        console.error('Failed to fetch dashboard data', error);
+      } catch (err) {
+        console.error('Failed to fetch dashboard data', err);
+        setError('Could not load matches. Please try refreshing the page.');
       } finally {
         setLoading(false);
       }
@@ -35,6 +37,13 @@ function Dashboard() {
   };
 
   if (loading) return <p>Loading matches...</p>;
+
+  if (error) return (
+    <div className="max-w-[1200px] mx-auto p-3 sm:p-6">
+      <Navbar />
+      <p className="text-red-400 mt-8">{error}</p>
+    </div>
+  );
 
   // Group stage
   const groupedMatches = matches
