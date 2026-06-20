@@ -68,18 +68,18 @@ function Dashboard() {
   const formatGroupTitle = (key) => key.replace('GROUP_', 'Group ');
 
   return (
-    <div className="max-w-[1200px] mx-auto p-6">
+    <div className="max-w-[1200px] mx-auto p-3 sm:p-6">
       <Navbar />
 
       {sortedGroupKeys.map((groupKey) => (
         <div key={groupKey} className="mb-8">
-          <h3 className="flex items-center gap-3 text-3xl font-extrabold text-gray-100 mt-8">
+          <h3 className="flex items-center gap-3 text-xl sm:text-3xl font-extrabold text-gray-100 mt-8">
             <span className="w-1 h-6 rounded-full shrink-0" style={{ backgroundColor: 'var(--accent)' }} />
             {formatGroupTitle(groupKey)}
           </h3>
           <div
             className={`grid gap-3 ${
-              groupKey.startsWith('GROUP_') ? 'grid-cols-3' : 'grid-cols-4'
+              groupKey.startsWith('GROUP_') ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
             }`}
           >
             {groupedMatches[groupKey].map((match) => (

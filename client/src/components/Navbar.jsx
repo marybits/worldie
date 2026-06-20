@@ -13,8 +13,8 @@ function Navbar() {
 
   const linkClass = (path) =>
     location.pathname === path
-      ? 'no-underline rounded-full px-4 py-2 border border-[var(--accent)] text-[var(--accent)] bg-transparent font-bold transition-colors'
-      : 'no-underline rounded-full px-4 py-2 border border-gray-800 text-gray-400 hover:border-gray-600 hover:text-gray-200 transition-colors';
+      ? 'no-underline rounded-full px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border border-[var(--accent)] text-[var(--accent)] bg-transparent font-bold transition-colors'
+      : 'no-underline rounded-full px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-800 text-gray-400 hover:border-gray-600 hover:text-gray-200 transition-colors';
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -53,10 +53,10 @@ function Navbar() {
   return (
     <div className="flex justify-between items-center py-4 mb-6 border-b border-gray-800">
       <div className="flex flex-col">
-        <h2 className="m-0 uppercase tracking-widest font-extrabold text-4xl">
+        <h2 className="m-0 uppercase tracking-widest font-extrabold text-2xl sm:text-4xl">
           <span className="bg-gradient-to-r from-[var(--accent)] to-[var(--accent-dark)] bg-clip-text text-transparent">Worldie</span> ⚽
         </h2>
-        <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">World Cup 2026 Predictions</span>
+        <span className="hidden sm:block text-xs text-gray-500 font-medium uppercase tracking-wide">World Cup 2026 Predictions</span>
       </div>
 
       <div className="flex items-center gap-2">
@@ -67,7 +67,7 @@ function Navbar() {
           Leaderboard
         </Link>
 
-        <div className="relative ml-4" ref={dropdownRef}>
+        <div className="relative ml-2 sm:ml-4" ref={dropdownRef}>
           <button
             onClick={() => {
               setDropdownOpen((o) => !o);
@@ -79,7 +79,7 @@ function Navbar() {
             <span className="bg-[var(--accent)] text-gray-900 rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold uppercase">
               {user?.username?.[0]}
             </span>
-            <span className="text-sm">{user?.username}</span>
+            <span className="hidden sm:block text-sm">{user?.username}</span>
             <svg
               width="12" height="12" viewBox="0 0 12 12" fill="none"
               className={`transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`}

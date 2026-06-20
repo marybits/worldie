@@ -26,7 +26,7 @@ function Leaderboard() {
   const top3 = leaderboard.slice(0, 3);
 
   return (
-    <div className="max-w-[1200px] mx-auto p-6">
+    <div className="max-w-[900px] mx-auto p-3 sm:p-6">
       <Navbar />
 
       <h2 className="flex items-center gap-3 text-2xl font-extrabold text-gray-100 mt-8">
@@ -35,10 +35,10 @@ function Leaderboard() {
       </h2>
 
       {top3.length > 0 && (
-        <div className="flex items-end justify-center gap-4 mt-8 mb-8">
+        <div className="flex items-end justify-center gap-2 sm:gap-4 mt-8 mb-8">
           {/* 2nd place */}
           {top3[1] ? (
-            <div className="flex flex-col items-center border border-gray-800 rounded-xl p-4 w-36 h-36 justify-center gap-2">
+            <div className="flex flex-col items-center border border-gray-800 rounded-xl p-3 sm:p-4 w-24 sm:w-36 h-28 sm:h-36 justify-center gap-2">
               <span className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-sm">
                 🥈
               </span>
@@ -48,7 +48,7 @@ function Leaderboard() {
           ) : <div className="w-36" />}
 
           {/* 1st place — tallest, accent border */}
-          <div className="flex flex-col items-center border border-[var(--accent)] rounded-xl p-4 w-36 h-44 justify-center gap-2">
+          <div className="flex flex-col items-center border border-(--accent) rounded-xl p-3 sm:p-4 w-24 sm:w-36 h-36 sm:h-44 justify-center gap-2">
             <span className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-sm">
               🥇
             </span>
@@ -58,7 +58,7 @@ function Leaderboard() {
 
           {/* 3rd place */}
           {top3[2] ? (
-            <div className="flex flex-col items-center border border-gray-800 rounded-xl p-4 w-36 h-28 justify-center gap-2">
+            <div className="flex flex-col items-center border border-gray-800 rounded-xl p-3 sm:p-4 w-24 sm:w-36 h-20 sm:h-28 justify-center gap-2">
               <span className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-sm">
                 🥉
               </span>
@@ -69,8 +69,8 @@ function Leaderboard() {
         </div>
       )}
 
-      <div className="bg-transparent rounded-2xl border border-gray-800 overflow-hidden">
-        <table className="w-full border-collapse">
+      <div className="bg-transparent rounded-2xl border border-gray-800 overflow-x-auto">
+        <table className="w-full border-collapse min-w-[400px]">
           <thead>
             <tr className="bg-gray-800 text-left">
               <th className="px-4 py-3 text-xs uppercase tracking-wide text-gray-500 font-medium">Rank</th>

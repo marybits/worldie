@@ -21,8 +21,8 @@ function Login() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
-      <div className="bg-transparent rounded-2xl border border-gray-800 p-10 w-80">
+    <div className="flex justify-center items-center min-h-screen px-4">
+      <div className="bg-transparent rounded-2xl border border-gray-800 p-8 sm:p-10 w-full max-w-sm">
         <h1 className="text-2xl mb-6 font-extrabold tracking-tight">Login to Worldie ⚽</h1>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input

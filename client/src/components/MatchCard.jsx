@@ -45,7 +45,7 @@ function MatchCard({ match, existingPrediction }) {
         <div className="flex-1" style={{ background: awayColor }} />
       </div>
 
-      <div className="p-4">
+      <div className="p-3 sm:p-4">
         <div className="flex items-center gap-1.5 font-semibold text-sm flex-wrap">
           {homeFlag
             ? <img src={homeFlag} alt={homeTeam} width="20" className="rounded-sm" />
