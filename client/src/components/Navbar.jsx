@@ -3,9 +3,12 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
 
 function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUsername } = useAuth();
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [editingUsername, setEditingUsername] = useState(false);
+  const [usernameInput, setUsernameInput] = useState('');
+  const [usernameError, setUsernameError] = useState('');
   const dropdownRef = useRef(null);
 
   const linkClass = (path) =>
@@ -17,6 +20,8 @@ function Navbar() {
     function handleClickOutside(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setDropdownOpen(false);
+        setEditingUsername(false);
+        setUsernameError('');
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -26,6 +31,23 @@ function Navbar() {
   const handleLogout = () => {
     setDropdownOpen(false);
     logout();
+  };
+
+  const openEditUsername = () => {
+    setUsernameInput(user?.username ?? '');
+    setUsernameError('');
+    setEditingUsername(true);
+  };
+
+  const handleSaveUsername = async () => {
+    setUsernameError('');
+    try {
+      await updateUsername(usernameInput);
+      setEditingUsername(false);
+      setDropdownOpen(false);
+    } catch (err) {
+      setUsernameError(err.response?.data?.message || 'Failed to update username');
+    }
   };
 
   return (
@@ -45,7 +67,11 @@ function Navbar() {
 
         <div className="relative ml-4" ref={dropdownRef}>
           <button
-            onClick={() => setDropdownOpen((o) => !o)}
+            onClick={() => {
+              setDropdownOpen((o) => !o);
+              setEditingUsername(false);
+              setUsernameError('');
+            }}
             className="flex items-center gap-1.5 text-gray-300 hover:text-gray-100 transition-colors bg-transparent border-none cursor-pointer p-0"
           >
             <span className="bg-[var(--accent)] text-gray-900 rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold uppercase">
@@ -61,13 +87,53 @@ function Navbar() {
           </button>
 
           {dropdownOpen && (
-            <div className="absolute right-0 mt-2 w-40 bg-neutral-900 border border-neutral-800 rounded-xl shadow-lg overflow-hidden z-50">
-              <button
-                onClick={handleLogout}
-                className="w-full text-left px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-800 hover:text-gray-100 transition-colors cursor-pointer border-none bg-transparent"
-              >
-                Logout
-              </button>
+            <div className="absolute right-0 mt-2 w-56 bg-neutral-900 border border-neutral-800 rounded-xl shadow-lg overflow-hidden z-50">
+              {editingUsername ? (
+                <div className="p-3 flex flex-col gap-2">
+                  <input
+                    type="text"
+                    value={usernameInput}
+                    onChange={(e) => setUsernameInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSaveUsername()}
+                    className="w-full px-2 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-gray-100 text-sm outline-none focus:border-[var(--accent)] placeholder:text-gray-500"
+                    autoFocus
+                  />
+                  {usernameError && (
+                    <p className="text-red-400 text-xs">{usernameError}</p>
+                  )}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleSaveUsername}
+                      className="flex-1 py-1.5 rounded-lg text-xs font-bold text-gray-900 border-none cursor-pointer transition-colors"
+                      style={{ backgroundColor: 'var(--accent)' }}
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() => { setEditingUsername(false); setUsernameError(''); }}
+                      className="flex-1 py-1.5 rounded-lg text-xs text-gray-400 bg-gray-800 border-none cursor-pointer hover:bg-gray-700 hover:text-gray-200 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <button
+                    onClick={openEditUsername}
+                    className="w-full text-left px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-800 hover:text-gray-100 transition-colors cursor-pointer border-none bg-transparent"
+                  >
+                    Edit username
+                  </button>
+                  <div className="h-px bg-gray-800" />
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-800 hover:text-gray-100 transition-colors cursor-pointer border-none bg-transparent"
+                  >
+                    Logout
+                  </button>
+                </>
+              )}
             </div>
           )}
         </div>

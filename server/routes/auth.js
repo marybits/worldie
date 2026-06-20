@@ -103,4 +103,30 @@ router.get('/me', protect, async (req, res) => {
 });
 
 
+// PUT /api/auth/username - Update current user's username
+router.put('/username', protect, async (req, res) => {
+  try {
+    const { username } = req.body;
+
+    if (!username || username.trim().length < 3) {
+      return res.status(400).json({ message: 'Username must be at least 3 characters' });
+    }
+
+    const existingUser = await User.findOne({ username, _id: { $ne: req.userId } });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Username already taken' });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.userId,
+      { username: username.trim() },
+      { new: true }
+    ).select('-password');
+
+    res.json({ id: user._id, username: user.username, email: user.email });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = router;

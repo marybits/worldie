@@ -35,8 +35,14 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const updateUsername = async (username) => {
+    const response = await api.put('/auth/username', { username });
+    localStorage.setItem('user', JSON.stringify(response.data));
+    setUser(response.data);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loginWithToken }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loginWithToken, updateUsername }}>
       {children}
     </AuthContext.Provider>
   );
