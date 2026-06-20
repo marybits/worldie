@@ -104,17 +104,24 @@ function MatchCard({ match, existingPrediction }) {
         )}
 
         {submitted && (
-          <p className="mt-1 text-sm font-mono">
-            {homeScore} - {awayScore}
-            {existingPrediction?.points != null && (
-              <span className="ml-1 font-mono text-gray-900 px-2 py-0.5 rounded-full text-xs" style={{ backgroundColor: 'var(--accent)' }}>
-                {existingPrediction.points} pts
-              </span>
-            )}
-          </p>
+          <div className="mt-1">
+            <span className="bg-gray-800 text-gray-400 rounded-full px-2 py-0.5 text-xs uppercase">Predicted</span>
+            <p className="text-sm font-mono mt-1 mb-0">
+              {homeScore} - {awayScore}
+              {existingPrediction?.points != null && (
+                <span className="ml-1 font-mono text-gray-900 px-2 py-0.5 rounded-full text-xs" style={{ backgroundColor: 'var(--accent)' }}>
+                  {existingPrediction.points} pts
+                </span>
+              )}
+            </p>
+          </div>
         )}
 
-        {teamsKnown && hasStarted && !submitted && <p className="text-gray-400 text-xs">Closed</p>}
+        {teamsKnown && hasStarted && !submitted && (
+          <p className="text-gray-400 text-xs">
+            {match.status === 'FINISHED' ? 'Full Time' : 'Predictions Closed'}
+          </p>
+        )}
       </div>
     </div>
   );
