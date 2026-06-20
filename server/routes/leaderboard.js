@@ -1,43 +1,32 @@
 const express = require('express');
 const router = express.Router();
-const Prediction = require('../models/Prediction');
+const User = require('../models/User');
 
-// GET /api/leaderboard - Get leaderboard sorted by total points
+// GET /api/leaderboard - Get all users ranked by total points (0-point users included)
 router.get('/', async (req, res) => {
   try {
-    const leaderboard = await Prediction.aggregate([
-      {
-        $match: { points: { $ne: null } }
-      },
-      {
-        $group: {
-          _id: '$user',
-          totalPoints: { $sum: '$points' },
-          predictionsCount: { $sum: 1 }
-        }
-      },
-      {
-        $sort: { totalPoints: -1 }
-      },
+    const leaderboard = await User.aggregate([
       {
         $lookup: {
-          from: 'users',
-          localField: '_id',
-          foreignField: '_id',
-          as: 'userInfo'
+          from: 'predictions',
+          let: { userId: '$_id' },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$user', '$$userId'] }, points: { $ne: null } } }
+          ],
+          as: 'scoredPredictions'
         }
-      },
-      {
-        $unwind: '$userInfo'
       },
       {
         $project: {
           _id: 0,
           userId: '$_id',
-          username: '$userInfo.username',
-          totalPoints: 1,
-          predictionsCount: 1
+          username: 1,
+          totalPoints: { $sum: '$scoredPredictions.points' },
+          predictionsCount: { $size: '$scoredPredictions' }
         }
+      },
+      {
+        $sort: { totalPoints: -1, username: 1 }
       }
     ]);
 
