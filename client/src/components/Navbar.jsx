@@ -53,22 +53,20 @@ function Navbar() {
   };
 
   return (
-    <div className="flex justify-between items-center py-4 mb-6 border-b border-gray-800">
-      <div className="flex flex-col">
-        {/* whitespace-nowrap prevents the ⚽ from wrapping to a second line on mobile */}
+    <div className="py-4 mb-6 border-b border-gray-800">
+
+      {/* Single row on all sizes: logo on the left, nav + avatar on the right */}
+      <div className="flex justify-between items-center">
         <h2 className="m-0 uppercase tracking-widest font-extrabold text-xl sm:text-4xl whitespace-nowrap">
           <span className="bg-gradient-to-r from-[var(--accent)] to-[var(--accent-dark)] bg-clip-text text-transparent">Worldie</span> ⚽
         </h2>
-        <span className="hidden sm:block text-xs text-gray-500 font-medium uppercase tracking-wide">World Cup 2026 Predictions</span>
-      </div>
 
-      <div className="flex items-center gap-2">
-        <Link to="/dashboard" className={linkClass('/dashboard')}>
-          Matches
-        </Link>
-        <Link to="/leaderboard" className={linkClass('/leaderboard')}>
-          Leaderboard
-        </Link>
+        <div className="flex items-center gap-2">
+          {/* Nav links — hidden on mobile, visible on sm+ */}
+          <div className="hidden sm:flex items-center gap-2">
+            <Link to="/dashboard" className={linkClass('/dashboard')}>Matches</Link>
+            <Link to="/leaderboard" className={linkClass('/leaderboard')}>Leaderboard</Link>
+          </div>
 
         <div className="relative ml-2 sm:ml-4" ref={dropdownRef}>
           <button
@@ -142,7 +140,15 @@ function Navbar() {
             </div>
           )}
         </div>
+        </div> {/* end right side flex */}
+      </div> {/* end top row */}
+
+      {/* Mobile-only nav row — sits below the logo/avatar row */}
+      <div className="flex sm:hidden gap-1 mt-3">
+        <Link to="/dashboard" className={linkClass('/dashboard')}>Matches</Link>
+        <Link to="/leaderboard" className={linkClass('/leaderboard')}>Leaderboard</Link>
       </div>
+
     </div>
   );
 }
