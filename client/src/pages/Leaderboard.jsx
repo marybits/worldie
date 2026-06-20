@@ -21,7 +21,22 @@ function Leaderboard() {
     fetchLeaderboard();
   }, []);
 
-  if (loading) return <p>Loading leaderboard...</p>;
+  if (loading) return (
+    <div className="max-w-[900px] mx-auto p-3 sm:p-6">
+      <Navbar />
+      <div className="h-7 w-40 rounded-lg bg-gray-800 animate-pulse mt-8 mb-8" />
+      <div className="bg-transparent rounded-2xl border border-gray-800 overflow-hidden animate-pulse">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="flex items-center gap-4 px-4 py-3 border-t border-gray-800 first:border-t-0">
+            <div className="h-4 w-6 rounded bg-gray-800" />
+            <div className="h-4 w-28 rounded bg-gray-700" />
+            <div className="h-6 w-14 rounded-full bg-gray-800 ml-auto" />
+            <div className="h-4 w-8 rounded bg-gray-800" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   const top3 = leaderboard.slice(0, 3);
 

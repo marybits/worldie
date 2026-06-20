@@ -15,6 +15,9 @@ function MatchCard({ match, existingPrediction }) {
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState('');
 
+  // Shared classes for score inputs — defined once so both predict and edit use the same style
+  const scoreInputClass = "no-spinner w-12 text-center font-mono py-2 px-1 text-sm bg-gray-800 border border-gray-700 text-gray-100 rounded-lg placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:shadow-[0_0_8px_oklch(62%_0.13_229.7_/_0.5)]";
+
   const hasStarted = new Date() >= new Date(match.matchDate);
   const teamsKnown = !!(match.homeTeam && match.awayTeam);
   const homeTeam = match.homeTeam ?? 'TBD';
@@ -77,7 +80,12 @@ function MatchCard({ match, existingPrediction }) {
         </div>
 
         <p className="text-gray-400 text-xs my-1 font-medium">
-          {new Date(match.matchDate).toLocaleDateString()}
+          {new Date(match.matchDate).toLocaleString(undefined, {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          })}
         </p>
 
         {match.status === 'FINISHED' && (
@@ -108,31 +116,29 @@ function MatchCard({ match, existingPrediction }) {
         )}
 
         {teamsKnown && !hasStarted && !submitted && (
-          <div className="mt-1">
+          <div className="flex items-center gap-2 mt-2 flex-wrap">
             <input
               type="number"
               min="0"
               value={homeScore}
               onChange={(e) => setHomeScore(e.target.value)}
-              style={{ width: '36px' }}
-              className="no-spinner font-mono p-0.5 text-xs bg-gray-800 border border-gray-700 text-gray-100 rounded placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:shadow-[0_0_8px_oklch(62%_0.13_229.7_/_0.5)]"
+              className={scoreInputClass}
             />
-            <span className="mx-1 font-mono">-</span>
+            <span className="font-mono text-gray-400">-</span>
             <input
               type="number"
               min="0"
               value={awayScore}
               onChange={(e) => setAwayScore(e.target.value)}
-              style={{ width: '36px' }}
-              className="no-spinner font-mono p-0.5 text-xs bg-gray-800 border border-gray-700 text-gray-100 rounded placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:shadow-[0_0_8px_oklch(62%_0.13_229.7_/_0.5)]"
+              className={scoreInputClass}
             />
             <button
               onClick={handlePredict}
-              className="ml-2 bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dark)] text-gray-900 border-none rounded-md px-2 py-0.5 text-xs cursor-pointer hover:from-[var(--accent-dark)] hover:to-[oklch(32%_0.11_229.7)] hover:scale-105 active:scale-95 transition-all duration-200"
+              className="bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dark)] text-gray-900 border-none rounded-lg px-3 py-2 text-xs font-bold cursor-pointer hover:from-[var(--accent-dark)] hover:to-[oklch(32%_0.11_229.7)] hover:scale-105 active:scale-95 transition-all duration-200"
             >
               Predict
             </button>
-            {error && <p className="text-red-500 text-xs">{error}</p>}
+            {error && <p className="text-red-500 text-xs w-full mt-1">{error}</p>}
           </div>
         )}
 
@@ -158,27 +164,25 @@ function MatchCard({ match, existingPrediction }) {
 
         {/* Editing mode: show inputs pre-filled with existing scores */}
         {submitted && editing && !hasStarted && (
-          <div className="mt-1">
+          <div className="flex items-center gap-2 mt-2 flex-wrap">
             <input
               type="number"
               min="0"
               value={homeScore}
               onChange={(e) => setHomeScore(e.target.value)}
-              style={{ width: '36px' }}
-              className="no-spinner font-mono p-0.5 text-xs bg-gray-800 border border-gray-700 text-gray-100 rounded placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:shadow-[0_0_8px_oklch(62%_0.13_229.7_/_0.5)]"
+              className={scoreInputClass}
             />
-            <span className="mx-1 font-mono">-</span>
+            <span className="font-mono text-gray-400">-</span>
             <input
               type="number"
               min="0"
               value={awayScore}
               onChange={(e) => setAwayScore(e.target.value)}
-              style={{ width: '36px' }}
-              className="no-spinner font-mono p-0.5 text-xs bg-gray-800 border border-gray-700 text-gray-100 rounded placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:shadow-[0_0_8px_oklch(62%_0.13_229.7_/_0.5)]"
+              className={scoreInputClass}
             />
             <button
               onClick={handleEdit}
-              className="ml-2 bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dark)] text-gray-900 border-none rounded-md px-2 py-0.5 text-xs cursor-pointer hover:from-[var(--accent-dark)] hover:to-[oklch(32%_0.11_229.7)] hover:scale-105 active:scale-95 transition-all duration-200"
+              className="bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dark)] text-gray-900 border-none rounded-lg px-3 py-2 text-xs font-bold cursor-pointer hover:from-[var(--accent-dark)] hover:to-[oklch(32%_0.11_229.7)] hover:scale-105 active:scale-95 transition-all duration-200"
             >
               Save
             </button>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import MatchCard from '../components/MatchCard';
+import MatchCardSkeleton from '../components/MatchCardSkeleton';
 import Navbar from '../components/Navbar';
 
 const KNOCKOUT_ROUNDS = ['Round of 32', 'Round of 16', 'Quarter-finals', 'Semi-finals', 'Third Place Play-off', 'Final'];
@@ -36,7 +37,20 @@ function Dashboard() {
     return predictions.find((p) => p.match._id === matchId);
   };
 
-  if (loading) return <p>Loading matches...</p>;
+  if (loading) return (
+    <div className="max-w-[1200px] mx-auto p-3 sm:p-6">
+      <Navbar />
+      {/* Show 2 fake "group" sections with 3 skeleton cards each while loading */}
+      {[1, 2].map((i) => (
+        <div key={i} className="mb-8">
+          <div className="h-7 w-32 rounded-lg bg-gray-800 animate-pulse mt-8 mb-3" />
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((j) => <MatchCardSkeleton key={j} />)}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 
   if (error) return (
     <div className="max-w-[1200px] mx-auto p-3 sm:p-6">
@@ -79,6 +93,17 @@ function Dashboard() {
   return (
     <div className="max-w-[1200px] mx-auto p-3 sm:p-6">
       <Navbar />
+
+      {/* Empty state — shown when the API returned successfully but has no matches yet */}
+      {sortedGroupKeys.length === 0 && (
+        <div className="flex flex-col items-center justify-center text-center py-24 gap-3">
+          <span className="text-5xl">⚽</span>
+          <p className="text-gray-300 font-semibold text-lg">No matches yet</p>
+          <p className="text-gray-500 text-sm max-w-xs">
+            Matches will appear here once the World Cup schedule is loaded. Check back soon!
+          </p>
+        </div>
+      )}
 
       {sortedGroupKeys.map((groupKey) => (
         <div key={groupKey} className="mb-8">
