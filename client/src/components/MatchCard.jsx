@@ -1,0 +1,121 @@
+import { useState } from 'react';
+import api from '../services/api';
+import { getTeamColor } from '../utils/teamColors';
+import { getFlagUrl } from '../utils/teamFlags';
+
+function MatchCard({ match, existingPrediction }) {
+  const [homeScore, setHomeScore] = useState(
+    existingPrediction?.predictedHomeScore ?? ''
+  );
+  const [awayScore, setAwayScore] = useState(
+    existingPrediction?.predictedAwayScore ?? ''
+  );
+  const [submitted, setSubmitted] = useState(!!existingPrediction);
+  const [error, setError] = useState('');
+
+  const hasStarted = new Date() >= new Date(match.matchDate);
+  const teamsKnown = !!(match.homeTeam && match.awayTeam);
+  const homeTeam = match.homeTeam ?? 'TBD';
+  const awayTeam = match.awayTeam ?? 'TBD';
+  const homeColor = getTeamColor(match.homeTeam) ?? '#6b7280';
+  const awayColor = getTeamColor(match.awayTeam) ?? '#6b7280';
+  const homeFlag = getFlagUrl(match.homeTeam);
+  const awayFlag = getFlagUrl(match.awayTeam);
+
+  const handlePredict = async () => {
+    setError('');
+    try {
+      await api.post('/predictions', {
+        matchId: match._id,
+        predictedHomeScore: Number(homeScore),
+        predictedAwayScore: Number(awayScore)
+      });
+      setSubmitted(true);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to submit prediction');
+    }
+  };
+
+  return (
+    <div className="rounded-2xl overflow-hidden border border-gray-800 bg-transparent hover:scale-[1.02] transition-transform duration-200">
+      <div className="flex h-1">
+        <div className="flex-1" style={{ background: homeColor }} />
+        <div className="flex-1" style={{ background: awayColor }} />
+      </div>
+
+      <div className="p-4">
+        <div className="flex items-center gap-1.5 font-semibold text-sm flex-wrap">
+          {homeFlag
+            ? <img src={homeFlag} alt={homeTeam} width="20" className="rounded-sm" />
+            : <span className="w-5 h-3.5 rounded-sm bg-gray-700 inline-block shrink-0" />
+          }
+          <span className={homeTeam === 'TBD' ? 'text-gray-500' : ''}>{homeTeam}</span>
+          <span className="text-gray-400 text-xs">vs</span>
+          <span className={awayTeam === 'TBD' ? 'text-gray-500' : ''}>{awayTeam}</span>
+          {awayFlag
+            ? <img src={awayFlag} alt={awayTeam} width="20" className="rounded-sm" />
+            : <span className="w-5 h-3.5 rounded-sm bg-gray-700 inline-block shrink-0" />
+          }
+        </div>
+
+        <p className="text-gray-400 text-xs my-1 font-medium">
+          {new Date(match.matchDate).toLocaleDateString()}
+        </p>
+
+        {match.status === 'FINISHED' && (
+          <p className="font-bold font-mono text-sm my-1">
+            {match.homeScore} - {match.awayScore}
+          </p>
+        )}
+
+        {!teamsKnown && (
+          <p className="text-gray-500 text-xs mt-1">Teams TBD</p>
+        )}
+
+        {teamsKnown && !hasStarted && !submitted && (
+          <div className="mt-1">
+            <input
+              type="number"
+              min="0"
+              value={homeScore}
+              onChange={(e) => setHomeScore(e.target.value)}
+              style={{ width: '36px' }}
+              className="no-spinner font-mono p-0.5 text-xs bg-gray-800 border border-gray-700 text-gray-100 rounded placeholder:text-gray-500"
+            />
+            <span className="mx-1 font-mono">-</span>
+            <input
+              type="number"
+              min="0"
+              value={awayScore}
+              onChange={(e) => setAwayScore(e.target.value)}
+              style={{ width: '36px' }}
+              className="no-spinner font-mono p-0.5 text-xs bg-gray-800 border border-gray-700 text-gray-100 rounded placeholder:text-gray-500"
+            />
+            <button
+              onClick={handlePredict}
+              className="ml-2 bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dark)] text-gray-900 border-none rounded-md px-2 py-0.5 text-xs cursor-pointer hover:from-[var(--accent-dark)] hover:to-[oklch(40%_0.15_75)] hover:scale-105 active:scale-95 transition-all duration-200"
+            >
+              Predict
+            </button>
+            {error && <p className="text-red-500 text-xs">{error}</p>}
+          </div>
+        )}
+
+        {submitted && (
+          <p className="mt-1 text-sm font-mono">
+            {homeScore} - {awayScore}
+            {existingPrediction?.points != null && (
+              <span className="ml-1 font-mono text-gray-900 px-2 py-0.5 rounded-full text-xs" style={{ backgroundColor: 'var(--accent)' }}>
+                {existingPrediction.points} pts
+              </span>
+            )}
+          </p>
+        )}
+
+        {teamsKnown && hasStarted && !submitted && <p className="text-gray-400 text-xs">Closed</p>}
+      </div>
+    </div>
+  );
+}
+
+export default MatchCard;

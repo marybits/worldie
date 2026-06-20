@@ -14,6 +14,10 @@ router.post('/', protect, async (req, res) => {
       return res.status(404).json({ message: 'Match not found' });
     }
 
+    if (!match.homeTeam || !match.awayTeam) {
+      return res.status(400).json({ message: 'Teams not yet determined for this match' });
+    }
+
     if (new Date() >= new Date(match.matchDate)) {
       return res.status(400).json({ message: 'Cannot predict after match has started' });
     }

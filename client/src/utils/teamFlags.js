@@ -1,0 +1,57 @@
+const teamFlagCodes = {
+  'United States': 'us',
+  'Mexico': 'mx',
+  'Canada': 'ca',
+  'Japan': 'jp',
+  'Iran': 'ir',
+  'South Korea': 'kr',
+  'Australia': 'au',
+  'Saudi Arabia': 'sa',
+  'Qatar': 'qa',
+  'Uzbekistan': 'uz',
+  'Jordan': 'jo',
+  'Iraq': 'iq',
+  'Argentina': 'ar',
+  'Brazil': 'br',
+  'Uruguay': 'uy',
+  'Colombia': 'co',
+  'Ecuador': 'ec',
+  'Paraguay': 'py',
+  'New Zealand': 'nz',
+  'Morocco': 'ma',
+  'Senegal': 'sn',
+  'Egypt': 'eg',
+  'Algeria': 'dz',
+  'Tunisia': 'tn',
+  'South Africa': 'za',
+  'Ivory Coast': 'ci',
+  'Ghana': 'gh',
+  'Cape Verde Islands': 'cv',
+  'Congo DR': 'cd',
+  'England': 'gb-eng',
+  'France': 'fr',
+  'Spain': 'es',
+  'Germany': 'de',
+  'Portugal': 'pt',
+  'Netherlands': 'nl',
+  'Belgium': 'be',
+  'Croatia': 'hr',
+  'Switzerland': 'ch',
+  'Austria': 'at',
+  'Scotland': 'gb-sct',
+  'Norway': 'no',
+  'Bosnia-Herzegovina': 'ba',
+  'Sweden': 'se',
+  'Turkey': 'tr',
+  'Czechia': 'cz',
+  'Panama': 'pa',
+  'Curaçao': 'cw',
+  'Haiti': 'ht'
+};
+
+export function getFlagUrl(teamName) {
+  const code = teamFlagCodes[teamName];
+  return code ? `https://flagcdn.com/w80/${code}.png` : null;
+}
+
+export default teamFlagCodes;
