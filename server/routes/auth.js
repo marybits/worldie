@@ -43,6 +43,8 @@ const authLimiter = rateLimit({
  *         description: User created — returns JWT token and user object
  *       400:
  *         description: Email already registered
+ *       429:
+ *         description: Too many attempts — rate limited for 15 minutes
  */
 router.post('/register', authLimiter, async (req, res) => {
   try {
@@ -99,6 +101,8 @@ router.post('/register', authLimiter, async (req, res) => {
  *         description: Login successful — returns JWT token and user object
  *       400:
  *         description: Invalid credentials
+ *       429:
+ *         description: Too many attempts — rate limited for 15 minutes
  */
 router.post('/login', authLimiter, async (req, res) => {
   try {

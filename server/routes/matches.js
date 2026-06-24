@@ -67,10 +67,19 @@ async function syncMatches() {
  *   post:
  *     summary: Sync matches from the football-data.org API and score finished matches
  *     tags: [Matches]
- *     description: Pulls the latest World Cup match data, updates the database, and runs the scoring algorithm for any newly finished matches. Called automatically by a cron job every hour.
+ *     description: Admin-only. Pulls the latest World Cup match data, updates the database, and runs the scoring algorithm for any newly finished matches. Called automatically by a cron job every hour.
+ *     parameters:
+ *       - in: header
+ *         name: x-admin-secret
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Must match the ADMIN_SECRET environment variable
  *     responses:
  *       200:
  *         description: Sync complete — returns count of synced and newly scored matches
+ *       403:
+ *         description: Forbidden — missing or invalid admin secret
  */
 // Admin-only guard — requires X-Admin-Secret header matching ADMIN_SECRET env var
 function adminOnly(req, res, next) {
@@ -123,8 +132,14 @@ async function calculateScoresForMatch(match) {
  *   post:
  *     summary: Manually trigger score calculation for a specific match
  *     tags: [Matches]
- *     description: Useful for testing — recalculates points for all predictions on a given match.
+ *     description: Admin-only. Recalculates points for all predictions on a given match.
  *     parameters:
+ *       - in: header
+ *         name: x-admin-secret
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Must match the ADMIN_SECRET environment variable
  *       - in: path
  *         name: id
  *         required: true
@@ -134,6 +149,8 @@ async function calculateScoresForMatch(match) {
  *     responses:
  *       200:
  *         description: Scores calculated
+ *       403:
+ *         description: Forbidden — missing or invalid admin secret
  *       404:
  *         description: Match not found
  */
