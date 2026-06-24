@@ -1,25 +1,28 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../services/api';
 import Navbar from '../components/Navbar';
 
 function Leaderboard() {
   const [leaderboard, setLeaderboard] = useState([]);
+  const [groups, setGroups]           = useState([]);
+  const [selectedGroup, setSelectedGroup] = useState(null); // null = Global
   const [loading, setLoading] = useState(true);
 
+  // Fetch the user's groups for the selector
   useEffect(() => {
-    async function fetchLeaderboard() {
-      try {
-        const response = await api.get('/leaderboard');
-        setLeaderboard(response.data);
-      } catch (error) {
-        console.error('Failed to fetch leaderboard', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchLeaderboard();
+    api.get('/groups/me').then((r) => setGroups(r.data)).catch(() => {});
   }, []);
+
+  // Re-fetch leaderboard whenever the selected group changes
+  useEffect(() => {
+    setLoading(true);
+    const url = selectedGroup ? `/leaderboard?groupId=${selectedGroup._id}` : '/leaderboard';
+    api.get(url)
+      .then((r) => setLeaderboard(r.data))
+      .catch(() => setLeaderboard([]))
+      .finally(() => setLoading(false));
+  }, [selectedGroup]);
 
   if (loading) return (
     <div className="max-w-[900px] mx-auto p-3 sm:p-6">
@@ -44,29 +47,58 @@ function Leaderboard() {
     <div className="max-w-[900px] mx-auto p-3 sm:p-6">
       <Navbar />
 
-      <h2 className="flex items-center gap-3 text-2xl font-extrabold text-gray-100 mt-8">
-        <span className="w-1 h-6 rounded-full shrink-0" style={{ backgroundColor: 'var(--accent)' }} />
-        Leaderboard 🏆
-      </h2>
+      <div className="flex items-center justify-between mt-8 mb-6 flex-wrap gap-3">
+        <h2 className="flex items-center gap-3 text-2xl font-extrabold text-gray-100 m-0">
+          <span className="w-1 h-6 rounded-full shrink-0" style={{ backgroundColor: 'var(--accent)' }} />
+          Leaderboard 🏆
+        </h2>
+
+        {/* Group selector — only shown if the user belongs to at least one group */}
+        {groups.length > 0 && (
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={() => setSelectedGroup(null)}
+              className={`px-3 py-1.5 rounded-xl text-sm font-semibold border-none cursor-pointer transition-colors ${
+                selectedGroup === null
+                  ? 'text-gray-900'
+                  : 'bg-gray-800 text-gray-400 hover:text-gray-100'
+              }`}
+              style={selectedGroup === null ? { backgroundColor: 'var(--accent)' } : {}}
+            >
+              Global
+            </button>
+            {groups.map((g) => (
+              <button
+                key={g._id}
+                onClick={() => setSelectedGroup(g)}
+                className={`px-3 py-1.5 rounded-xl text-sm font-semibold border-none cursor-pointer transition-colors ${
+                  selectedGroup?._id === g._id
+                    ? 'text-gray-900'
+                    : 'bg-gray-800 text-gray-400 hover:text-gray-100'
+                }`}
+                style={selectedGroup?._id === g._id ? { backgroundColor: 'var(--accent)' } : {}}
+              >
+                {g.name}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
 
       {top3.length > 0 && leaderboard[0].totalPoints > 0 && (
-        <div className="flex items-end justify-center gap-2 sm:gap-4 mt-8 mb-8">
+        <div className="flex items-end justify-center gap-2 sm:gap-4 mt-4 mb-8">
           {/* 2nd place */}
           {top3[1] ? (
             <div className="flex flex-col items-center border border-gray-800 rounded-xl p-3 sm:p-4 w-24 sm:w-36 h-28 sm:h-36 justify-center gap-2">
-              <span className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-sm">
-                🥈
-              </span>
+              <span className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-sm">🥈</span>
               <p className="text-sm font-medium text-gray-300 truncate w-full text-center">{top3[1].username}</p>
               <p className="font-mono text-xs text-gray-400">{top3[1].totalPoints} pts</p>
             </div>
           ) : <div className="w-36" />}
 
-          {/* 1st place — tallest, accent border */}
+          {/* 1st place */}
           <div className="flex flex-col items-center border border-(--accent) rounded-xl p-3 sm:p-4 w-24 sm:w-36 h-36 sm:h-44 justify-center gap-2">
-            <span className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-sm">
-              🥇
-            </span>
+            <span className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-sm">🥇</span>
             <p className="text-sm font-bold text-gray-100 truncate w-full text-center">{top3[0].username}</p>
             <p className="font-mono text-xs" style={{ color: 'var(--accent)' }}>{top3[0].totalPoints} pts</p>
           </div>
@@ -74,9 +106,7 @@ function Leaderboard() {
           {/* 3rd place */}
           {top3[2] ? (
             <div className="flex flex-col items-center border border-gray-800 rounded-xl p-3 sm:p-4 w-24 sm:w-36 h-20 sm:h-28 justify-center gap-2">
-              <span className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-sm">
-                🥉
-              </span>
+              <span className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-sm">🥉</span>
               <p className="text-sm font-medium text-gray-300 truncate w-full text-center">{top3[2].username}</p>
               <p className="font-mono text-xs text-gray-400">{top3[2].totalPoints} pts</p>
             </div>
@@ -84,34 +114,47 @@ function Leaderboard() {
         </div>
       )}
 
-      <div className="bg-transparent rounded-2xl border border-gray-800 overflow-x-auto">
-        <table className="w-full border-collapse min-w-[400px]">
-          <thead>
-            <tr className="bg-gray-800 text-left">
-              <th className="px-4 py-3 text-xs uppercase tracking-wide text-gray-500 font-medium">Rank</th>
-              <th className="px-4 py-3 text-xs uppercase tracking-wide text-gray-500 font-medium">Username</th>
-              <th className="px-4 py-3 text-xs uppercase tracking-wide text-gray-500 font-medium">Points</th>
-              <th className="px-4 py-3 text-xs uppercase tracking-wide text-gray-500 font-medium">Predictions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {leaderboard.map((entry, index) => (
-              <tr key={entry.userId} className="border-t border-gray-800">
-                <td className="px-4 py-3 font-bold">
-                  {index < 3 && entry.totalPoints > 0 ? ['🥇', '🥈', '🥉'][index] : index + 1}
-                </td>
-                <td className="px-4 py-3">{entry.username}</td>
-                <td className="px-4 py-3">
-                  <span className="font-mono text-gray-900 px-3 py-0.5 rounded-full text-sm font-bold" style={{ backgroundColor: 'var(--accent)' }}>
-                    {entry.totalPoints}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-gray-400">{entry.predictionsCount}</td>
+      {leaderboard.length === 0 ? (
+        <div className="flex flex-col items-center justify-center text-center py-16 gap-3 rounded-2xl border border-gray-800">
+          <span className="text-4xl">🏆</span>
+          <p className="text-gray-300 font-semibold m-0">No results yet</p>
+          {selectedGroup && (
+            <p className="text-gray-500 text-sm m-0 max-w-xs">
+              Invite more friends to <span className="text-gray-300 font-semibold">{selectedGroup.name}</span> using your code from the{' '}
+              <Link to="/groups" className="text-[var(--accent)] hover:underline">Groups</Link> page.
+            </p>
+          )}
+        </div>
+      ) : (
+        <div className="bg-transparent rounded-2xl border border-gray-800 overflow-x-auto">
+          <table className="w-full border-collapse min-w-[400px]">
+            <thead>
+              <tr className="bg-gray-800 text-left">
+                <th className="px-4 py-3 text-xs uppercase tracking-wide text-gray-500 font-medium">Rank</th>
+                <th className="px-4 py-3 text-xs uppercase tracking-wide text-gray-500 font-medium">Username</th>
+                <th className="px-4 py-3 text-xs uppercase tracking-wide text-gray-500 font-medium">Points</th>
+                <th className="px-4 py-3 text-xs uppercase tracking-wide text-gray-500 font-medium">Predictions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {leaderboard.map((entry, index) => (
+                <tr key={entry.userId} className="border-t border-gray-800">
+                  <td className="px-4 py-3 font-bold">
+                    {index < 3 && entry.totalPoints > 0 ? ['🥇', '🥈', '🥉'][index] : index + 1}
+                  </td>
+                  <td className="px-4 py-3">{entry.username}</td>
+                  <td className="px-4 py-3">
+                    <span className="font-mono text-gray-900 px-3 py-0.5 rounded-full text-sm font-bold" style={{ backgroundColor: 'var(--accent)' }}>
+                      {entry.totalPoints}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-gray-400">{entry.predictionsCount}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
