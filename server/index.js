@@ -44,7 +44,7 @@ const swaggerSpec = swaggerJsdoc({
     },
     servers: [
       { url: 'http://localhost:8080', description: 'Local dev' },
-      { url: 'https://worldie-api.onrender.com', description: 'Production' },
+      { url: 'https://worldie.onrender.com', description: 'Production' },
     ],
     // Components define reusable pieces — here we define the JWT bearer scheme
     // so every protected endpoint can reference it with: security: [{ bearerAuth: [] }]

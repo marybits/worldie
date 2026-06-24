@@ -2,8 +2,8 @@
 
 Predict World Cup 2026 match scores, earn points for accuracy, and compete with friends on a live leaderboard.
 
-**Live demo:** [worldie-predictions.vercel.app](https://worldie-predictions.vercel.app)  
-**API docs:** [worldie-api.onrender.com/api/docs](https://worldie-api.onrender.com/api/docs)
+**Live demo:** [worldie.onrender.com](https://worldie.onrender.com)  
+**API docs:** [worldie.onrender.com/api/docs](https://worldie.onrender.com/api/docs)
 
 ---
 
