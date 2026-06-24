@@ -11,8 +11,6 @@ Predict World Cup 2026 match scores, earn points for accuracy, and compete with 
 
 Worldie is a full-stack prediction game built around the 2026 FIFA World Cup. Users predict the scoreline of each match before kickoff, earn points based on accuracy, and compete against others on a global or private leaderboard. Match data is pulled automatically from the football-data.org API and synced on a schedule via a background cron job.
 
-Built as a learning project during my 2nd year of programming — every feature was designed, implemented, and iterated on from scratch.
-
 ---
 
 ## Features
@@ -161,6 +159,7 @@ All endpoints are documented with request bodies, parameters, and response codes
 - Animated podium for the leaderboard top 3
 - Per-match prediction breakdown (see what everyone predicted after the match)
 - Tournament bracket view for the knockout stage
+
 
 ---
 

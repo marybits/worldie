@@ -24,6 +24,26 @@ const GOOGLE_ICON = (
   </svg>
 );
 
+/* Defined outside Landing so React sees the same component type on every render.
+   If defined inside, every keystroke re-creates the type → input loses focus. */
+function AuthInput(props) {
+  return (
+    <input
+      {...props}
+      className="w-full px-3.5 py-2.5 rounded-xl text-sm text-gray-100 outline-none transition-all duration-150"
+      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--glass-border)' }}
+      onFocus={(e) => {
+        e.target.style.borderColor = 'var(--accent)';
+        e.target.style.boxShadow   = '0 0 0 3px var(--accent-light)';
+      }}
+      onBlur={(e) => {
+        e.target.style.borderColor = 'var(--glass-border)';
+        e.target.style.boxShadow   = 'none';
+      }}
+    />
+  );
+}
+
 export default function Landing() {
   const { login, register } = useAuth();
   const navigate = useNavigate();
@@ -74,23 +94,6 @@ export default function Landing() {
     setPassword('');
     setUsername('');
   };
-
-  /* shared input style */
-  const Input = ({ ...props }) => (
-    <input
-      {...props}
-      className="w-full px-3.5 py-2.5 rounded-xl text-sm text-gray-100 outline-none transition-all duration-150"
-      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--glass-border)' }}
-      onFocus={(e) => {
-        e.target.style.borderColor = 'var(--accent)';
-        e.target.style.boxShadow   = '0 0 0 3px var(--accent-light)';
-      }}
-      onBlur={(e) => {
-        e.target.style.borderColor = 'var(--glass-border)';
-        e.target.style.boxShadow   = 'none';
-      }}
-    />
-  );
 
   const countdown = nextMatch ? getCountdown(nextMatch.matchDate) : null;
   const homeFlag  = nextMatch ? getFlagUrl(nextMatch.homeTeam) : null;
@@ -268,7 +271,7 @@ export default function Landing() {
               {/* Form */}
               <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                 {tab === 'register' && (
-                  <Input
+                  <AuthInput
                     type="text"
                     placeholder="Username"
                     value={username}
@@ -277,14 +280,14 @@ export default function Landing() {
                     minLength={3}
                   />
                 )}
-                <Input
+                <AuthInput
                   type="email"
                   placeholder="Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
-                <Input
+                <AuthInput
                   type="password"
                   placeholder="Password"
                   value={password}
