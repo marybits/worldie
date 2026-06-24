@@ -101,7 +101,7 @@ function Groups() {
           <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wide m-0">New group</h3>
           <input
             type="text"
-            placeholder="Group name (e.g. Las Chamas)"
+            placeholder="Group name (e.g. World Cup Squad)"
             value={groupName}
             onChange={(e) => setGroupName(e.target.value)}
             className="px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-100 text-sm outline-none focus:border-[var(--accent)] placeholder:text-gray-500"

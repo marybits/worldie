@@ -21,9 +21,9 @@ function getCountdown(matchDate) {
 // would be rendered literally instead of being falsy.
 function getResultBadge(points) {
   const map = {
-    3: { label: '⭐ +3 exacto',  classes: 'bg-green-900/60 text-green-400' },
-    1: { label: '+1 ganador',    classes: 'bg-amber-900/60 text-amber-400' },
-    0: { label: '+0 fallaste',   classes: 'bg-red-900/60 text-red-400' },
+    3: { label: '⭐ +3 exact',   classes: 'bg-green-900/60 text-green-400' },
+    1: { label: '+1 correct',    classes: 'bg-amber-900/60 text-amber-400' },
+    0: { label: '+0 missed',     classes: 'bg-red-900/60 text-red-400' },
   };
   return map[points] ?? null;
 }
@@ -130,7 +130,7 @@ function MatchCard({ match, existingPrediction }) {
             {submitted && (
               <div className="flex items-center gap-2 mt-1 flex-wrap">
                 <span className="font-mono text-gray-400 text-xs">
-                  Tuyo: {homeScore}–{awayScore}
+                  Predicted: {homeScore}–{awayScore}
                 </span>
                 {existingPrediction?.points != null && (() => {
                   const badge = getResultBadge(existingPrediction.points);

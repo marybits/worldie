@@ -44,6 +44,7 @@ function Navbar() {
   const handleLogout = () => {
     setDropdownOpen(false);
     logout();
+    navigate('/');
   };
 
   return (
