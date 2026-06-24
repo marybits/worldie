@@ -69,6 +69,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/matches', require('./routes/matches').router);
 app.use('/api/predictions', require('./routes/predictions'));
 app.use('/api/leaderboard', require('./routes/leaderboard'));
+app.use('/api/groups', require('./routes/groups'));
 
 
 app.get('/', (req, res) => {

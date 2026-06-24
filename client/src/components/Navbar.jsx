@@ -61,6 +61,7 @@ function Navbar() {
           <div className="hidden sm:flex items-center gap-2">
             <Link to="/dashboard" className={linkClass('/dashboard')}>Matches</Link>
             <Link to="/leaderboard" className={linkClass('/leaderboard')}>Leaderboard</Link>
+            <Link to="/groups" className={linkClass('/groups')}>Groups</Link>
           </div>
 
           {/* User avatar + dropdown */}
@@ -121,6 +122,7 @@ function Navbar() {
       <div className="flex sm:hidden gap-1 mt-3">
         <Link to="/dashboard" className={linkClass('/dashboard')}>Matches</Link>
         <Link to="/leaderboard" className={linkClass('/leaderboard')}>Leaderboard</Link>
+        <Link to="/groups" className={linkClass('/groups')}>Groups</Link>
       </div>
 
     </div>
