@@ -72,8 +72,17 @@ async function syncMatches() {
  *       200:
  *         description: Sync complete — returns count of synced and newly scored matches
  */
+// Admin-only guard — requires X-Admin-Secret header matching ADMIN_SECRET env var
+function adminOnly(req, res, next) {
+  const secret = process.env.ADMIN_SECRET;
+  if (!secret || req.headers['x-admin-secret'] !== secret) {
+    return res.status(403).json({ message: 'Forbidden' });
+  }
+  next();
+}
+
 // POST /api/matches/sync - Sync matches from external API and calculate scores for finished matches
-router.post('/sync', async (req, res) => {
+router.post('/sync', adminOnly, async (req, res) => {
   try {
     const result = await syncMatches();
     res.json({ message: `${result.matchesCount} matches synced, ${result.scoredCount} newly scored` });
@@ -128,8 +137,8 @@ async function calculateScoresForMatch(match) {
  *       404:
  *         description: Match not found
  */
-// POST /api/matches/:id/calculate - test endpoint to calculate scores for a specific match (useful for testing)
-router.post('/:id/calculate', async (req, res) => {
+// POST /api/matches/:id/calculate - admin-only endpoint to manually score a specific match
+router.post('/:id/calculate', adminOnly, async (req, res) => {
   try {
     const match = await Match.findById(req.params.id);
     if (!match) {
